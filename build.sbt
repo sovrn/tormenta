@@ -11,9 +11,9 @@ val chillVersion = "0.7.3"
 val scalaCheckVersion = "1.12.2"
 val scalaTestVersion = "2.2.4"
 val slf4jVersion = "1.6.6"
-val stormKafkaVersion = "0.9.0-wip6-scala292-multischeme"
+val stormKafkaVersion = "0.9.0.1"
 val stormKestrelVersion = "0.9.0-wip5-multischeme"
-val stormVersion = "0.9.0-wip15"
+val stormVersion = "0.10.0"
 val twitter4jVersion = "3.0.3"
 
 val extraSettings =
