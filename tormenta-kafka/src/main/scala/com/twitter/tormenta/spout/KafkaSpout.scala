@@ -17,20 +17,30 @@ limitations under the License.
 package com.twitter.tormenta.spout
 
 import com.twitter.tormenta.scheme.Scheme
-import storm.kafka.{ KafkaSpout => StormKafkaSpout, KafkaConfig, SpoutConfig }
+import org.apache.storm.kafka.spout.{ KafkaSpout => StormKafkaSpout, KafkaSpoutConfig, ZkHosts }
+import java.util.{HashMap => JHashMap}
 import backtype.storm.task.TopologyContext
+import com.twitter.tormenta.spout.SchemeSpout
+import com.twitter.tormenta.spout.RichStormSpout
 
 /**
  *  @author Oscar Boykin
  *  @author Sam Ritchie
  */
 
-class KafkaSpout[+T](scheme: Scheme[T], zkHost: String, brokerZkPath: String, topic: String, appID: String, zkRoot: String, forceStartOffsetTime: Int = -1)
+class KafkaSpout[+T](scheme: Scheme[T], bootStrapServers: String, groupId: String, topic: String, keyDeserializer: String, valueDeserializer: String, forceStartOffsetTime: Int = -1)
     extends SchemeSpout[T] {
   override def getSpout[R](transformer: Scheme[T] => Scheme[R], callOnOpen: => TopologyContext => Unit) = {
     // Spout ID needs to be unique per spout, so create that string by taking the topic and appID.
     val spoutId = topic + appID
-    val spoutConfig = new SpoutConfig(new KafkaConfig.ZkHosts(zkHost, brokerZkPath), topic, zkRoot, spoutId)
+    val consumerProps = new JHashMap[String,String]
+    consumerProps.put(KafkaSpoutConfig.Consumer.BOOTSTRAP_SERVERS, bootStrapServers)
+    consumerProps.put(KafkaSpoutConfig.Consumer.GROUP_ID, groupId)
+    consumerProps.put(KafkaSpoutConfig.Consumer.KEY_DESERIALIZER, keyDeserializer)
+    consumerProps.put(KafkaSpoutConfig.Consumer.VALUE_DESERIALIZER, valueDeserializer)
+    
+    val spoutConfig = new KafkaSpoutConfig.Builder(consumerProps)
+    //val spoutConfig = new SpoutConfig(new ZkHosts(zkHost, brokerZkPath), topic, zkRoot, spoutId)
 
     spoutConfig.scheme = transformer(scheme)
     spoutConfig.forceStartOffsetTime(forceStartOffsetTime)

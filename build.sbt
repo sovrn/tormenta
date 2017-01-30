@@ -11,7 +11,7 @@ val chillVersion = "0.7.3"
 val scalaCheckVersion = "1.12.2"
 val scalaTestVersion = "2.2.4"
 val slf4jVersion = "1.6.6"
-val stormKafkaVersion = "0.9.0.1"
+val stormKafkaVersion = "1.0.2"
 val stormKestrelVersion = "0.9.0-wip5-multischeme"
 val stormVersion = "0.10.0"
 val twitter4jVersion = "3.0.3"
@@ -35,7 +35,7 @@ val sharedSettings = extraSettings ++ ciSettings ++ Seq(
   javacOptions in doc := Seq("-source", "1.6"),
   libraryDependencies ++= Seq(
     "org.slf4j" % "slf4j-api" % slf4jVersion,
-    "storm" % "storm" % stormVersion % "provided",
+    "org.apache.storm" % "storm-core" % stormVersion % "provided",
     "org.scalacheck" %% "scalacheck" % scalaCheckVersion % "test",
     "org.scalatest" %% "scalatest" % scalaTestVersion % "test"
   ),
@@ -79,15 +79,14 @@ val sharedSettings = extraSettings ++ ciSettings ++ Seq(
     ReleaseStep(action = Command.process("sonatypeReleaseAll", _)),
     pushChanges),
 
-  publishTo <<= version { v =>
-    Some(
-      if (v.trim.toUpperCase.endsWith("SNAPSHOT"))
-        Opts.resolver.sonatypeSnapshots
-      else
-        Opts.resolver.sonatypeStaging
-    )
-  },
-
+  publishTo := {
+       val nexus = "http://nexus1.dfw2.lijit.com/"
+       if (isSnapshot.value)
+          Some("snapshots" at nexus + "content/repositories/snapshots") 
+       else
+         Some("releases"  at nexus + "content/repositories/releases")
+     },
+  credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
   pomExtra := (
     <url>https://github.com/twitter/tormenta</url>
     <licenses>
@@ -168,7 +167,7 @@ lazy val tormentaTwitter = module("twitter").settings(
 ).dependsOn(tormentaCore % "test->test;compile->compile")
 
 lazy val tormentaKafka = module("kafka").settings(
-  libraryDependencies += "storm" % "storm-kafka" % stormKafkaVersion
+  libraryDependencies += "org.apache.storm" % "storm-kafka-client" % stormKafkaVersion
 ).dependsOn(tormentaCore % "test->test;compile->compile")
 
 lazy val tormentaKestrel = module("kestrel").settings(
