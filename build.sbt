@@ -12,6 +12,7 @@ val scalaCheckVersion = "1.12.2"
 val scalaTestVersion = "2.2.4"
 val slf4jVersion = "1.6.6"
 val stormKafkaVersion = "0.9.0-wip6-scala292-multischeme"
+val heronVersion = "0.14.5"
 val stormKestrelVersion = "0.9.0-wip5-multischeme"
 val stormVersion = "0.9.0-wip15"
 val twitter4jVersion = "3.0.3"
@@ -31,11 +32,11 @@ val sharedSettings = extraSettings ++ ciSettings ++ Seq(
   organization := "com.twitter",
   scalaVersion := "2.10.5",
   crossScalaVersions := Seq("2.10.5", "2.11.7"),
-  javacOptions ++= Seq("-source", "1.6", "-target", "1.6"),
-  javacOptions in doc := Seq("-source", "1.6"),
+  javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
+  javacOptions in doc := Seq("-source", "1.8"),
   libraryDependencies ++= Seq(
     "org.slf4j" % "slf4j-api" % slf4jVersion,
-    "storm" % "storm" % stormVersion % "provided",
+    "com.twitter.heron" % "heron-storm" % heronVersion % "provided",
     "org.scalacheck" %% "scalacheck" % scalaCheckVersion % "test",
     "org.scalatest" %% "scalatest" % scalaTestVersion % "test"
   ),
@@ -168,7 +169,7 @@ lazy val tormentaTwitter = module("twitter").settings(
 ).dependsOn(tormentaCore % "test->test;compile->compile")
 
 lazy val tormentaKafka = module("kafka").settings(
-  libraryDependencies += "storm" % "storm-kafka" % stormKafkaVersion
+  libraryDependencies += "com.twitter.heron" % "heron-kafka" % heronVersion
 ).dependsOn(tormentaCore % "test->test;compile->compile")
 
 lazy val tormentaKestrel = module("kestrel").settings(

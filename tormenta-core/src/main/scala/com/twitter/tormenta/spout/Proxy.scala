@@ -1,12 +1,12 @@
 package com.twitter.tormenta.spout
 
-import backtype.storm.spout.SpoutOutputCollector
-import backtype.storm.task.TopologyContext
-import backtype.storm.topology.IRichSpout
-import backtype.storm.topology.OutputFieldsDeclarer
 import com.twitter.tormenta.Externalizer
 import java.io.Serializable
 import java.util.{ Map => JMap }
+import org.apache.storm.topology.OutputFieldsDeclarer
+import org.apache.storm.spout.SpoutOutputCollector
+import org.apache.storm.topology.IRichSpout
+import org.apache.storm.task.TopologyContext
 
 /**
  * *
@@ -19,7 +19,7 @@ trait Proxied[T] {
 }
 
 trait SpoutProxy extends IRichSpout with Proxied[IRichSpout] with Serializable {
-  override def open(conf: JMap[_, _], topologyContext: TopologyContext, outputCollector: SpoutOutputCollector) =
+  override def open(conf: JMap[String, Object], topologyContext: TopologyContext, outputCollector: SpoutOutputCollector) =
     self.open(conf, topologyContext, outputCollector)
   override def nextTuple = self.nextTuple
   override def declareOutputFields(declarer: OutputFieldsDeclarer) = self.declareOutputFields(declarer)
@@ -35,7 +35,7 @@ class RichStormSpout(val self: IRichSpout,
     @transient callOnOpen: (TopologyContext) => Unit) extends SpoutProxy {
   val lockedFn = Externalizer(callOnOpen)
 
-  override def open(conf: JMap[_, _], context: TopologyContext, coll: SpoutOutputCollector) {
+  override def open(conf: JMap[String, Object], context: TopologyContext, coll: SpoutOutputCollector) {
     lockedFn.get(context)
     self.open(conf, context, coll)
   }

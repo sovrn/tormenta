@@ -16,14 +16,12 @@
 
 package com.twitter.tormenta.spout
 
-import backtype.storm.testing.CompletableSpout
-import backtype.storm.topology.IRichSpout
-import backtype.storm.topology.OutputFieldsDeclarer
-import backtype.storm.tuple.Fields
-import backtype.storm.tuple.Values
-import clojure.lang.RT
-import java.util.{ List => JList, ArrayList }
-import collection.JavaConverters._
+import java.util.ArrayList
+import java.util.{ List => JList }
+
+import scala.collection.JavaConverters._
+
+import org.apache.storm.tuple.Values
 
 object TraversableSpout {
   def apply[T](items: TraversableOnce[T], fieldName: String = "item"): TraversableSpout[T] =

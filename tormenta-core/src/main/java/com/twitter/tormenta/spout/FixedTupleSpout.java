@@ -16,20 +16,24 @@
 
 package com.twitter.tormenta.spout;
 
-import backtype.storm.spout.SpoutOutputCollector;
-import backtype.storm.task.TopologyContext;
-import backtype.storm.testing.FixedTuple;
-import backtype.storm.testing.CompletableSpout;
-import backtype.storm.topology.IRichSpout;
-import backtype.storm.topology.OutputFieldsDeclarer;
-import backtype.storm.tuple.Fields;
-import backtype.storm.utils.Utils;
+
+
+import static org.apache.storm.utils.Utils.get;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import static backtype.storm.utils.Utils.get;
+
+import org.apache.storm.spout.SpoutOutputCollector;
+import org.apache.storm.task.TopologyContext;
+import org.apache.storm.topology.IRichSpout;
+import org.apache.storm.topology.OutputFieldsDeclarer;
+import org.apache.storm.tuple.Fields;
+import org.apache.storm.utils.Utils;
+
+
 
 public class FixedTupleSpout implements IRichSpout, CompletableSpout {
   private static final Map<String, Integer> acked = new HashMap<String, Integer>();
@@ -105,24 +109,23 @@ public class FixedTupleSpout implements IRichSpout, CompletableSpout {
   }
 
   @Override
-  public Object exhausted_QMARK_() {
+  public boolean isExhausted() {
     return getSourceTuples().size() == getCompleted();
   }
 
   @Override
-  public Object startup() {
-    return null;
+  public void startup() {
+    
   }
 
   @Override
-  public Object cleanup() {
+  public void clean() {
     synchronized(acked) {
       acked.remove(_id);
     }
     synchronized(failed) {
       failed.remove(_id);
     }
-    return null;
   }
 
   public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
