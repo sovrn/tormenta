@@ -169,7 +169,7 @@ lazy val tormentaTwitter = module("twitter").settings(
 ).dependsOn(tormentaCore % "test->test;compile->compile")
 
 lazy val tormentaKafka = module("kafka").settings(
-  libraryDependencies += "com.twitter.heron" % "heron-kafka" % heronVersion
+  libraryDependencies += "com.twitter.heron" % "heron-kafka" % heronVersion % "provided"
 ).dependsOn(tormentaCore % "test->test;compile->compile")
 
 lazy val tormentaKestrel = module("kestrel").settings(
